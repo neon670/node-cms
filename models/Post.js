@@ -1,3 +1,4 @@
+const fileUpload = require('express-fileupload');
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
@@ -12,7 +13,9 @@ const PostSchema = new Schema({
        type:String,
        required: true 
     },
-
+    file:{
+        type: String
+    },
     status:{
         type:String,
         default: 'public'
@@ -24,6 +27,10 @@ const PostSchema = new Schema({
     body:{
         type: String,
         required: true
+    },
+    date:{
+        type: Date,
+        default: Date.now()
     }
 
 });

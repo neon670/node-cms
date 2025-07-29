@@ -1,8 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const Post = require('../../models/Post');
-
-
+const {isEmpty, uploadDir} = require('../../helpers/handlebar-helpers');
+const fs = require('fs');
+const path = require('path');
+const moment = require('moment');
 
 // router.get('/', (req, res)=>{
 //     res.render('admin/post');
@@ -21,7 +23,32 @@ router.get('/create', (req, res)=>{
 });
 
 router.post('/create', (req, res)=>{
+    var errors = []
+
+    if(!req.body.title){
+        errors.push({message: "Please add a title"});
+    }
+
+    if(errors.length > 0){
+        req.render('/admin/posts/create', {
+            errors:errors
+        });
+
+    }else{
+
+    var filename ="https://placehold.co/600x400";
+    if(!isEmpty(req.files)){
+        var file = req.files.file;
+        filename = Date.now() + '-' + file.name;
+    
+        file.mv('.public/uploads' + filename, (err)=>{
+            if(err) throw err;
+        });
+    }
+    
+
     var allowComments = true;
+
     if(req.body.allowComments){
         allowComments = true;
     }else{
@@ -34,10 +61,16 @@ router.post('/create', (req, res)=>{
         allowComments: req.body.allowComments,
         body: req.body.body
     })
+
     newPost.save().then(savePost =>{
-    res.redirect('/admin/posts')
+    req.flash('success-message', 'Post was created successfully');
+    res.redirect('/admin/posts');
+    }).catch(validator=>{
+        validator.errors
     });
 
+    }
+    
 });
 
 router.get('/edit:id', (req,res)=>{
@@ -61,16 +94,33 @@ router.put('/edit/:id',(res,req)=>{
         post.allowComments= req.body.allowComments,
         post.body= req.body.body
 
+        if(!isEmpty(req.files)){
+
+        var file = req.files.file;
+        filename = Date.now() + '-' + file.name;
+        post.file = filename;
+    
+        file.mv('.public/uploads' + filename, (err)=>{
+            if(err) throw err;
+        });
+    }
+    
         post.save().then(updatedPost =>{
+            req.flash('success_messgae', 'Post was successfully updated.');
             res.redirect('admin/posts')
         })
         
     });
 });
 
-router.delete('/edit:id', (req,res)=>{
-    Post.remove({_id:req.params.id}).then(result=>{
-        res.redirect('admin/posts/')
+router.delete('/:id', (req,res)=>{
+    Post.findOne({_id:req.params.id}).then(post=>{
+        fs.unlink(post.file, (err)=>{
+            post.remove();
+            req.flash('success_messgae', 'Post was successfully deleted.');
+            res.redirect('admin/posts/')
+        });
+       
     });
 });
 
