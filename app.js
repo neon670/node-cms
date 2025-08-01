@@ -22,7 +22,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.engine('handlebars', engine({ 
     extname: '.handlebars', // Specify the file extension for Handlebars templates
     defaultLayout: 'home', //  (Optional) Specify a default layout file
-    helpers: {select: select}
+    helpers: {select: select,generateDate:generateDate}
 }));
 
 // app.engine('handlebars', exphbs({defaultLayout:'home'}));
@@ -52,10 +52,12 @@ app.use((req, res, next)=>{
 const homeRoutes = require('./routes/home/home-routes');
 const adminRoutes = require('./routes/admin/admin-routes');
 const postsRoutes = require('./routes/admin/posts');
+const categoriesRoutes = require('./routes/admin/categories');
 
 app.use('/',homeRoutes);
 app.use('/admin',adminRoutes);
 app.use('/admin/posts',postsRoutes);
+app.use('/admin/categories',categoriesRoutes);
 
 
 app.listen(4100,()=>{
