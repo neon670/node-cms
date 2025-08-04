@@ -7,13 +7,18 @@ const bodyParser = require('body-parser');
 const methodOverride = require('method-override');
 const fileUpload = require('express-fileupload');
 const session = require('express-session');
-const flashMessage = require("connect-flash");
+const flashMessage = require('connect-flash');
+const {mongoDbUrl} = require('./config/database');
+const passport = require('passport');
+;
 
 
 
-mongoose.connect('mongodb://localhost:27017/node-cms').then((db)=>{
+mongoose.connect(mongoDbUrl).then((db)=>{
     console.log('Conneceted');
 }).catch(error=>console.log(error));
+mongoose.Promise = global.Promise;
+
 
 
 const {select, generateDate} = require('./helpers/handlebar-helpers');
@@ -41,10 +46,18 @@ app.use(session({
     saveUninitialized: true
 }));
 app.use(flashMessage());
+// PASSPORT
+
+app.use(passport.initialize());
+app.use(passport.session());
 
 //local var suing middleware
 app.use((req, res, next)=>{
-    res.locals.success_message = req.flash('success_message');
+    res.locals.user = req.user || null;
+    res.locals.success_message = req.flashMessage('success_message');
+    res.locals.error_message = req.flashMessage('error_message');
+    res.locals.form_errors = req.flashMessage('form_errors');
+    res.locals.error = req.flashMessage('error');
     next();
 });
 
