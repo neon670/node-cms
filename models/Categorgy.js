@@ -1,6 +1,5 @@
-const fileUpload = require('express-fileupload');
 const mongoose = require('mongoose');
-const Schema = mongoose.Schema;
+const Schema  = mongoose.Schema;
 
 
 const CategorySchema = new Schema({
@@ -11,4 +10,4 @@ const CategorySchema = new Schema({
 
 });
 
-module.exports = mongoose.model('Categories', CategorySchema);
+module.exports = mongoose.model('categories', CategorySchema);

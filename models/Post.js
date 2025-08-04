@@ -1,12 +1,19 @@
 const fileUpload = require('express-fileupload');
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
+const URLSlugs = require('mongoose-url-slugs');
 
 
 const PostSchema = new Schema({
-    user:{
-       
+    user: {
 
+       type: Schema.Types.ObjectId,
+       ref:'users'
+   },
+
+    category: {
+        type: Schema.Types.ObjectId,
+        ref: 'categories'
     },
 
     title:{
@@ -31,8 +38,14 @@ const PostSchema = new Schema({
     date:{
         type: Date,
         default: Date.now()
-    }
+    },
+    comments: [{
 
-});
+        type: Schema.Types.ObjectId,
+        ref: 'comments'
+    }]
 
-module.exports = mongoose.model('Post', PostSchema);
+}, {usePushEach: true});
+
+PostSchema.plugin(URLSlugs('title', {field: 'slug'}));
+module.exports = mongoose.model('posts', PostSchema);

@@ -1,43 +1,82 @@
 const express = require('express');
-const Post = require('../../models/Post');
 const router = express.Router();
-const faker = require('faker');
-const Category = require('../../models/Categories');
+const Category = require('../../models/Category');
+const {userAuth} = require('../../helpers/auth');
 
+router.all('/*',userAuth, (req, res, next)=>{
 
+    req.app.locals.layout = 'admin';
+    next()
+
+});
 
 router.get('/', (req, res)=>{
-     Category.find({}).then(categrories=>{
-        res.render('admin/categories/', {category:categories});
-        });
+
+    Category.find({}).then(categories=>{
+
+        res.render('admin/categories/index', {categories: categories});
+
+    });
+
 });
+
 
 router.post('/create', (req, res)=>{
-    
+
     const newCategory = new Category({
-            name: req.body.name
-        })
 
-        newCategory.save().then(saveCategory =>{
-        req.flash('success-message', 'Category was created successfully');
-        res.redirect('/admin/categories/');
-        }).catch(validator=>{
-            validator.errors
-        });
-    
-    
-});
+        name: req.body.name
 
-router.delete('/:id', (req,res)=>{
-    Post.findOne({_id:req.params.id}).then(category=>{
-                 category.remove();
-            req.flash('success_messgae', 'Post was successfully deleted.');
-            res.redirect('admin/categories/')
-        
-       
     });
+
+    newCategory.save(savedCategory=>{
+
+        res.redirect('/admin/categories');
+
+    });
+
 });
 
+
+router.get('/edit/:id', (req, res)=>{
+
+    Category.findOne({_id: req.params.id}).then(category=>{
+
+        res.render('admin/categories/edit', {category: category});
+
+    });
+
+});
+
+router.put('/edit/:id', (req, res)=>{
+
+    Category.findOne({_id: req.params.id}).then(category=>{
+
+        category.name = req.body.name;
+
+        category.save().then(savedCategory=>{
+
+            res.redirect('/admin/categories');
+
+        });
+
+
+    });
+
+});
+
+
+router.delete('/:id', (req, res)=>{
+
+   Category.remove({_id: req.params.id}).then(result=>{
+
+
+       res.redirect('/admin/categories');
+
+   });
+
+
+});
 
 
 module.exports = router;

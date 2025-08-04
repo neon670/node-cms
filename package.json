@@ -1,14 +1,16 @@
 {
   "name": "cms",
   "version": "1.0.0",
-  "description": "node cms",
+  "description": "a simple node cms",
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  
   "author": "noethefreelancer",
   "license": "ISC",
   "dependencies": {
+    "bcryptjs": "^3.0.2",
     "body-parser": "^2.2.0",
     "connect-flash": "^0.1.1",
     "express": "^5.1.0",
@@ -19,7 +21,10 @@
     "method-override": "^3.0.0",
     "moment": "^2.30.1",
     "mongodb": "^6.18.0",
-    "mongoose": "^8.16.5"
+    "mongoose": "^8.16.5",
+    "mongoose-url-slugs": "^1.0.2",
+    "passport": "^0.7.0",
+    "passport-local": "^1.0.0"
   },
   "devDependencies": {
     "nodemon": "^3.1.10"
